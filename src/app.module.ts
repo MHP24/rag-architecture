@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
+import { PdfModule } from './modules/pdf/pdf.module';
+import { SearchesModule } from './modules/searches/searches.module';
 
 @Module({
-  imports: [],
+  imports: [PdfModule, SearchesModule],
   controllers: [],
   providers: [],
 })

@@ -1,0 +1,1 @@
+export { formatArrayToText } from './formatter';

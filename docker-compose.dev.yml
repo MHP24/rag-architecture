@@ -1,14 +1,25 @@
-version: '3.4'
+version: '3.8'
 
 services:
-  app:
-    container_name: nestjs-skeleton
-    env_file:
-      - .env
-    build: 
-      context: .
-      dockerfile: Dockerfile.dev
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
     ports:
-      - ${PORT}:${PORT}
+      - "9200:9200"
     volumes:
-      - ./:/app
+      - ./etc/es_data:/usr/share/elasticsearch/data
+
+  # app:
+  #   container_name: nestjs-skeleton
+  #   env_file:
+  #     - .env
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   volumes:
+  #     - ./:/app

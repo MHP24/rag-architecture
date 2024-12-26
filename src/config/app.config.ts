@@ -4,11 +4,13 @@ config();
 
 interface EnvVars {
   PORT: number;
+  ELASTICSEARCH_URL: string;
 }
 
 const envSchema = joi
   .object({
     PORT: joi.number().required(),
+    ELASTICSEARCH_URL: joi.string().required(),
   })
   .unknown(true);
 
@@ -21,4 +23,7 @@ const envVars: EnvVars = value;
 
 export const envs = {
   port: envVars.PORT,
+  elasticsearch: {
+    url: envVars.ELASTICSEARCH_URL,
+  },
 };
