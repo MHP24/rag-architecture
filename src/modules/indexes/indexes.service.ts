@@ -14,7 +14,7 @@ export class IndexesService {
 
   // * Create index
   async createIndex(index: string) {
-    await this.elasticsearchService.indices.create({
+    return await this.elasticsearchService.indices.create({
       index,
       body: {
         mappings: {
