@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
-import { SearchesService } from './searches.service';
-import { SearchesController } from './searches.controller';
+import { IndexesService } from './indexes.service';
+import { IndexesController } from './indexes.controller';
 import { envs } from '../../config';
 
 @Module({
@@ -10,8 +10,8 @@ import { envs } from '../../config';
       node: envs.elasticsearch.url,
     }),
   ],
-  controllers: [SearchesController],
-  providers: [SearchesService],
-  exports: [SearchesService],
+  controllers: [IndexesController],
+  providers: [IndexesService],
+  exports: [IndexesService],
 })
-export class SearchesModule {}
+export class IndexesModule {}

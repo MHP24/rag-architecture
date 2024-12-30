@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AskDto } from './dto';
-import { SearchesService } from '../searches/searches.service';
+import { IndexesService } from '../indexes/indexes.service';
 import { Http } from '../../common';
 import { envs } from '../../config';
 import { OpenaiResponse } from './types/openai';
@@ -8,7 +8,7 @@ import { OpenaiResponse } from './types/openai';
 @Injectable()
 export class AssistantService {
   private readonly http = new Http();
-  constructor(private readonly searchesService: SearchesService) {}
+  constructor(private readonly indexesService: IndexesService) {}
 
   async sendToLLM(context: string, question: string): Promise<string> {
     const { data } = await this.http.post<OpenaiResponse>({
@@ -31,14 +31,13 @@ export class AssistantService {
     return data.choices[0].message.content.trim();
   }
 
-  async ask({ message }: AskDto) {
-    const data = await this.searchesService.searchContent('pdfs', message);
+  async ask(askDto: AskDto) {
+    const data = await this.indexesService.searchIndexedContent(askDto);
     if (!data.results) {
       return { message: 'No estoy capacitado para responder esta pregunta' };
     }
-    console.log(data.response);
     return {
-      message: await this.sendToLLM(data.response, message),
+      message: await this.sendToLLM(data.response, askDto.message),
     };
   }
 }

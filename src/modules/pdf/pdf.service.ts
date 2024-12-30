@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { SearchesService } from '../searches/searches.service';
+import { IndexesService } from '../indexes/indexes.service';
 import * as pdf from 'pdf-parse';
 import * as fs from 'fs';
+import { UploadPdfDto } from './dto';
 
 @Injectable()
 export class PdfService {
-  constructor(private readonly searchesService: SearchesService) {}
+  constructor(private readonly indexesService: IndexesService) {}
 
   // * Extract data required from PDF files
   async extractTextFromPdf(filePath: string): Promise<string> {
@@ -15,7 +16,7 @@ export class PdfService {
   }
 
   // * Upload data from request
-  async handleUploadPdf(file: Express.Multer.File) {
+  async handleUploadPdf(file: Express.Multer.File, uploadPdfDto: UploadPdfDto) {
     // * File data
     const { originalname, buffer, ...rest } = file;
 
@@ -25,11 +26,14 @@ export class PdfService {
 
     // * Transformation and extraction
     const content = await this.extractTextFromPdf(filePath);
-    const { id } = await this.searchesService.indexContent('pdfs', content);
+    const { id, embedding } = await this.indexesService.indexContent(
+      uploadPdfDto.index,
+      content,
+    );
 
     // * Remove from tmp directory
     fs.unlinkSync(filePath);
 
-    return { fileId: id, originalname, ...rest };
+    return { fileId: id, originalname, embedding, ...rest };
   }
 }

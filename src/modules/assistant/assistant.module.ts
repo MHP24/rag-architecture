@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AssistantService } from './assistant.service';
 import { AssistantController } from './assistant.controller';
-import { SearchesModule } from '../searches/searches.module';
+import { IndexesModule } from '../indexes/indexes.module';
 
 @Module({
-  imports: [SearchesModule],
+  imports: [IndexesModule],
   controllers: [AssistantController],
   providers: [AssistantService],
 })

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PdfService } from './pdf.service';
 import { PdfController } from './pdf.controller';
-import { SearchesModule } from '../searches/searches.module';
+import { IndexesModule } from '../indexes/indexes.module';
 
 @Module({
-  imports: [SearchesModule],
+  imports: [IndexesModule],
   controllers: [PdfController],
   providers: [PdfService],
   exports: [PdfService],
