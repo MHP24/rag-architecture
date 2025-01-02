@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class UploadPdfDto {
+export class UploadFileDto {
   @IsString()
   index: string;
 }

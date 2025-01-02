@@ -21,3 +21,17 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - 5601:5601
+
+  docs-db:
+    container_name: docs_database
+    image: mysql:8.0
+    restart: always
+    volumes:
+      - ./etc/mysql:/var/lib/mysql
+    ports:
+      - 3206:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=docsdb
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=123456

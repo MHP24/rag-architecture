@@ -30,7 +30,7 @@ export class IndexesService {
     });
   }
 
-  // * Index content from PDF
+  // * Index content from File
   async indexContent(
     index: string,
     content: string,

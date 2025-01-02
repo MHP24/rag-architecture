@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model File {
+  id        String   @id @default(uuid()) @map("id")
+  name      String   @map("name")
+  mimetype  String   @map("mime_type")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+  isActive  Boolean  @default(true) @map("is_active")
+
+  @@map("files")
+}

@@ -7,7 +7,7 @@ export class IndexesController {
   constructor(private readonly indexesService: IndexesService) {}
 
   @Get('search')
-  searchPdf(@Body() searchDto: SearchDto) {
+  searchContent(@Body() searchDto: SearchDto) {
     return this.indexesService.searchIndexedContent(searchDto);
   }
 
