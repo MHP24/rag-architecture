@@ -1,7 +1,7 @@
 {
-  "name": "elasticsearch-pdfs-use-case",
+  "name": "rag-architecture",
   "version": "1.0.0",
-  "description": "Elasticsearch PDFs use case",
+  "description": "RAG Architecture",
   "author": "MHP24",
   "private": true,
   "license": "UNLICENSED",
