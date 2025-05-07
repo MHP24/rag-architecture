@@ -64,26 +64,12 @@ export class EmbeddingsService {
   async embedPage(
     text: string,
     maxChars: number = 500,
-    maxChunks: number = 5,
   ): Promise<EmbeddingData> {
     const chunks = this.splitTextIntoChunks(text, maxChars);
-
-    let normalizedChunks = chunks;
-    if (chunks.length > maxChunks) {
-      normalizedChunks = chunks.slice(0, maxChunks);
-    } else {
-      normalizedChunks = [
-        ...chunks,
-        ...Array(maxChunks - chunks.length).fill(''),
-      ];
-    }
-
-    const embeddingsResponse = await this.generativeService.embedChunks(
-      normalizedChunks,
-    );
+    const embeddingsResponse = await this.generativeService.embedChunks(chunks);
 
     return {
-      chunks: normalizedChunks,
+      chunks,
       embeddings: embeddingsResponse.result.results.map(
         ({ embedding }) => embedding,
       ),
