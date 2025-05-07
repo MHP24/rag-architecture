@@ -5,20 +5,24 @@ config();
 interface EnvVars {
   PORT: number;
   ELASTICSEARCH_URL: string;
-  OPENAI_API_KEY: string;
-  OPENAI_URL: string;
-  OPENAI_MODEL: string;
-  PROMPT_INSTRUCTIONS: string;
+  WX_VERSION: string;
+  WX_SERVICE_URL: string;
+  WX_API_KEY: string;
+  WX_PROJECT_ID: string;
+  WX_EMBEDDINGS_MODEL: string;
+  WX_MODEL: string;
 }
 
 const envSchema = joi
   .object({
     PORT: joi.number().required(),
     ELASTICSEARCH_URL: joi.string().required(),
-    OPENAI_API_KEY: joi.string().required(),
-    OPENAI_URL: joi.string().required(),
-    OPENAI_MODEL: joi.string().required(),
-    PROMPT_INSTRUCTIONS: joi.string().required(),
+    WX_VERSION: joi.string().required(),
+    WX_SERVICE_URL: joi.string().required(),
+    WX_API_KEY: joi.string().required(),
+    WX_PROJECT_ID: joi.string().required(),
+    WX_EMBEDDINGS_MODEL: joi.string().required(),
+    WX_MODEL: joi.string().required(),
   })
   .unknown(true);
 
@@ -31,13 +35,15 @@ const envVars: EnvVars = value;
 
 export const envs = {
   port: envVars.PORT,
-  elasticsearch: {
+  es: {
     url: envVars.ELASTICSEARCH_URL,
   },
   llm: {
-    openaiApiKey: envVars.OPENAI_API_KEY,
-    openaiUrl: envVars.OPENAI_URL,
-    openaiModel: envVars.OPENAI_MODEL,
-    prompt: envVars.PROMPT_INSTRUCTIONS,
+    version: envVars.WX_VERSION,
+    serviceUrl: envVars.WX_SERVICE_URL,
+    apiKey: envVars.WX_API_KEY,
+    projectId: envVars.WX_PROJECT_ID,
+    embeddingsModel: envVars.WX_EMBEDDINGS_MODEL,
+    model: envVars.WX_MODEL,
   },
 };

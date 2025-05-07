@@ -1,23 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { IndexesService } from '../indexes/indexes.service';
-import * as pdf from 'pdf-parse';
-import * as fs from 'fs';
+import { Injectable } from '@nestjs/common';
 import { UploadFileDto } from './dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { RetrievalService } from '../retrieval/retrieval.service';
+import {
+  chunkArray,
+  convertToPdf,
+  extractPdfText,
+  saveTmpBuffer,
+  wait,
+} from '../../common/utils';
+import { EmbeddingsService } from '../embeddings/embeddings.service';
 
 @Injectable()
 export class FilesService {
   constructor(
-    private readonly indexesService: IndexesService,
-    private readonly prismaService: PrismaService,
+    private readonly searchService: RetrievalService,
+    private readonly embeddingsService: EmbeddingsService,
   ) {}
-
-  // * Extract data required from PDF files
-  async extractTextFromPdf(filePath: string): Promise<string> {
-    const pdfBuffer = fs.readFileSync(filePath);
-    const pdfData = await pdf(pdfBuffer);
-    return pdfData.text;
-  }
 
   // * Upload data from request
   async handleUploadFile(
@@ -25,48 +23,42 @@ export class FilesService {
     uploadFileDto: UploadFileDto,
   ) {
     // * File data
-    const { originalname, buffer, mimetype, ...rest } = file;
+    const { originalname, buffer, ...rest } = file;
+
+    console.log({
+      uploadFileDto,
+      rest,
+    });
 
     // * File store
-    const filePath = `./tmp/${originalname}`;
-    fs.writeFileSync(filePath, buffer);
-
-    // * Transformation and extraction
-    const content = await this.extractTextFromPdf(filePath);
-    const { id } = await this.indexesService.indexContent(
-      uploadFileDto.index,
-      content,
+    const fileTmpPath = await saveTmpBuffer(
+      buffer,
+      originalname.split('.').at(-1),
     );
 
-    // * Remove from tmp directory
-    fs.unlinkSync(filePath);
+    const convertedFileTmpPath = await convertToPdf(fileTmpPath);
+    console.log({ convertedFileTmpPath });
 
-    // * Save file props in database
-    const data = await this.prismaService.file.create({
-      data: {
-        id,
-        mimetype,
-        name: originalname,
-      },
-    });
+    // * Transformation and extraction
+    const pages = await extractPdfText(convertedFileTmpPath);
+    const chunkedPages = chunkArray(pages, 5);
 
-    return { ...data, ...rest };
-  }
+    const fileData: { page: number; data: any }[] = [];
 
-  // * Get all files from database
-  async getAll() {
-    const files = await this.prismaService.file.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-      where: {
-        isActive: true,
-      },
-    });
+    for (const chunk of chunkedPages) {
+      const chunkResult = await Promise.all(
+        chunk.map(async ({ page, content }) => ({
+          page,
+          data: await this.embeddingsService.embedPage(content),
+        })),
+      );
+      fileData.push(...chunkResult);
 
-    if (!files.length) throw new NotFoundException('Files not found');
+      await wait(1000);
+    }
 
-    return files;
+    // * Store embeddings in ES
+
+    return fileData;
   }
 }

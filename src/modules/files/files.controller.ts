@@ -1,6 +1,5 @@
 import {
   Controller,
-  Get,
   Param,
   Post,
   UploadedFile,
@@ -22,10 +21,5 @@ export class FilesController {
     @Param() uploadFileDto: UploadFileDto,
   ) {
     return this.filesService.handleUploadFile(file, uploadFileDto);
-  }
-
-  @Get('/')
-  getFiles() {
-    return this.filesService.getAll();
   }
 }
