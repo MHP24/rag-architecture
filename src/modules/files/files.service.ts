@@ -9,6 +9,7 @@ import {
   wait,
 } from '../../common/utils';
 import { EmbeddingsService } from '../embeddings/embeddings.service';
+import { EmbeddingData } from '../embeddings/types';
 
 @Injectable()
 export class FilesService {
@@ -23,12 +24,7 @@ export class FilesService {
     uploadFileDto: UploadFileDto,
   ) {
     // * File data
-    const { originalname, buffer, ...rest } = file;
-
-    console.log({
-      uploadFileDto,
-      rest,
-    });
+    const { originalname, buffer } = file;
 
     // * File store
     const fileTmpPath = await saveTmpBuffer(
@@ -37,13 +33,12 @@ export class FilesService {
     );
 
     const convertedFileTmpPath = await convertToPdf(fileTmpPath);
-    console.log({ convertedFileTmpPath });
 
     // * Transformation and extraction
     const pages = await extractPdfText(convertedFileTmpPath);
     const chunkedPages = chunkArray(pages, 5);
 
-    const fileData: { page: number; data: any }[] = [];
+    const fileData: { page: number; data: EmbeddingData }[] = [];
 
     for (const chunk of chunkedPages) {
       const chunkResult = await Promise.all(
@@ -58,7 +53,11 @@ export class FilesService {
     }
 
     // * Store embeddings in ES
-
+    await this.searchService.indexDocumentEmbeddings(
+      uploadFileDto.index,
+      originalname,
+      fileData,
+    );
     return fileData;
   }
 }

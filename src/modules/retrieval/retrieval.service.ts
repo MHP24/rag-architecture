@@ -16,6 +16,20 @@ export class RetrievalService {
     });
   }
 
+  async createDocumentIndex(indexName: string) {
+    await this.createIndex(indexName, {
+      mappings: {
+        properties: {
+          id: { type: 'text' },
+          fileName: { type: 'text' },
+          pageNumber: { type: 'integer' },
+          chunkText: { type: 'text' },
+          embedding: { type: 'dense_vector', dims: 3840 },
+        },
+      },
+    });
+  }
+
   async indexDocument(index: string, body: any) {
     return this.elasticsearchService.index({
       index,
@@ -49,25 +63,9 @@ export class RetrievalService {
   // TODO: Refactor
   async indexDocumentEmbeddings(
     indexName: string,
+    fiileName: string,
     embeddingsData: { page: number; data: EmbeddingData }[],
   ) {
-    try {
-      await this.deleteIndex(indexName);
-    } catch (e) {
-      this.logger.error(e);
-    }
-
-    await this.createIndex(indexName, {
-      mappings: {
-        properties: {
-          pageNumber: { type: 'integer' },
-          chunkIndex: { type: 'integer' },
-          chunkText: { type: 'text' },
-          embedding: { type: 'dense_vector', dims: 3840 },
-        },
-      },
-    });
-
     for (const {
       data: { chunks, embeddings },
       page,
@@ -77,6 +75,7 @@ export class RetrievalService {
       );
       await this.indexDocument(indexName, {
         id: uuidv4(),
+        fiileName,
         pageNumber: page,
         embedding: embeddings.flat(),
         chunkText: chunks,

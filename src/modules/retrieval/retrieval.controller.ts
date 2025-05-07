@@ -8,9 +8,6 @@ export class RetrievalController {
 
   @Post('create-index')
   createIndex(@Body() createIndexDto: CreateIndexDto) {
-    return this.retrievalService.createIndex(
-      createIndexDto.index,
-      createIndexDto.body,
-    );
+    return this.retrievalService.createDocumentIndex(createIndexDto.index);
   }
 }
