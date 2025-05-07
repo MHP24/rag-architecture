@@ -4,6 +4,7 @@ import { EmbeddingData } from '../embeddings/types';
 import { v4 as uuidv4 } from 'uuid';
 import { SearchDocumentQueryDto } from './dto';
 import { GenerativeService } from '../generative/generative.service';
+import { EmbeddingsService } from '../embeddings/embeddings.service';
 
 @Injectable()
 export class RetrievalService {
@@ -12,6 +13,7 @@ export class RetrievalService {
   constructor(
     private readonly elasticsearchService: ElasticsearchService,
     private readonly generativeService: GenerativeService,
+    private readonly embeddingsService: EmbeddingsService,
   ) {}
 
   async createIndex(index: string, body?: any) {
@@ -25,11 +27,11 @@ export class RetrievalService {
     await this.createIndex(indexName, {
       mappings: {
         properties: {
-          id: { type: 'text' },
+          id: { type: 'keyword' },
           fileName: { type: 'text' },
           pageNumber: { type: 'integer' },
           chunkText: { type: 'text' },
-          embedding: { type: 'dense_vector', dims: 768 },
+          embedding: { type: 'dense_vector', dims: 768, similarity: 'cosine' },
         },
       },
     });
@@ -75,6 +77,9 @@ export class RetrievalService {
       page,
     } of embeddingsData) {
       for (let i = 0; i < chunks.length; i++) {
+        this.logger.log(
+          `Page (${page}). Indexing embeddings with: ${embeddings[i].length} dims`,
+        );
         await this.indexDocument(indexName, {
           id: uuidv4(),
           fileName,
@@ -90,7 +95,9 @@ export class RetrievalService {
     const { index, query, k } = searchDocumentQueryDto;
 
     const queryArray = await this.generativeService.embedChunks([query]);
-    const queryEmbedding = queryArray.result.results[0].embedding;
+    const rawEmbedding = queryArray.result.results[0].embedding;
+    const queryEmbedding =
+      this.embeddingsService.normalizeEmbedding(rawEmbedding);
 
     const searchResponse = await this.elasticsearchService.search({
       index,

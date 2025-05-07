@@ -16,6 +16,12 @@ export class EmbeddingsService {
       .trim();
   }
 
+  // * Normalize embeddings for query and ES store
+  normalizeEmbedding(embedding: number[]): number[] {
+    const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
+    return embedding.map((val) => val / norm);
+  }
+
   // * Text splitter for chunks with token limit consideration
   splitTextIntoChunks(text: string, maxChars: number = 500): string[] {
     const textSplitted = this.normalizeText(text).split('\n');
@@ -61,18 +67,17 @@ export class EmbeddingsService {
   }
 
   // * Generates embeddings for a specific page (for a document should be used in a map, for, etc.)
-  async embedPage(
-    text: string,
-    maxChars: number = 500,
-  ): Promise<EmbeddingData> {
-    const chunks = this.splitTextIntoChunks(text, maxChars);
+  async embedPage(text: string): Promise<EmbeddingData> {
+    const chunks = this.splitTextIntoChunks(text);
     const embeddingsResponse = await this.generativeService.embedChunks(chunks);
+
+    const normalizedEmbeddings = embeddingsResponse.result.results.map(
+      ({ embedding }) => this.normalizeEmbedding(embedding),
+    );
 
     return {
       chunks,
-      embeddings: embeddingsResponse.result.results.map(
-        ({ embedding }) => embedding,
-      ),
+      embeddings: normalizedEmbeddings,
     };
   }
 }
