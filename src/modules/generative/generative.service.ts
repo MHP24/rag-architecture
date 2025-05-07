@@ -34,7 +34,6 @@ export class GenerativeService {
   }
 
   async embedChunks(chunks: string[]) {
-    console.log({ chunks, l0: chunks[0].length });
     return await this.watsonxAIService.embedText({
       inputs: chunks,
       modelId: envs.llm.embeddingsModel,

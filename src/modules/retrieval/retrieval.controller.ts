@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { CreateIndexDto } from './dto';
+import { CreateIndexDto, SearchDocumentQueryDto } from './dto';
 import { RetrievalService } from './retrieval.service';
 
 @Controller('retrieval')
@@ -9,5 +9,10 @@ export class RetrievalController {
   @Post('create-index')
   createIndex(@Body() createIndexDto: CreateIndexDto) {
     return this.retrievalService.createDocumentIndex(createIndexDto.index);
+  }
+
+  @Post('search-document-query')
+  searchDocumentQuery(@Body() searchDocumentQueryDto: SearchDocumentQueryDto) {
+    return this.retrievalService.searchDocumentQuery(searchDocumentQueryDto);
   }
 }
