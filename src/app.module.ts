@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { FilesModule } from './modules/files/files.module';
-import { IndexesModule } from './modules/indexes/indexes.module';
-import { AssistantModule } from './modules/assistant/assistant.module';
+import { EmbeddingsModule } from './modules/embeddings/embeddings.module';
+import { RetrievalModule } from './modules/retrieval/retrieval.module';
+import { GenerativeModule } from './modules/generative/generative.module';
 @Module({
-  imports: [FilesModule, IndexesModule, AssistantModule],
+  imports: [EmbeddingsModule, RetrievalModule, GenerativeModule, FilesModule],
   controllers: [],
   providers: [],
 })

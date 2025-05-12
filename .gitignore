@@ -36,4 +36,6 @@ lerna-debug.log*
 
 .env
 /etc
-/prisma/migrations/*
+/tmp/*
+!/tmp/.gitkeep
+es_cert_chain.crt
