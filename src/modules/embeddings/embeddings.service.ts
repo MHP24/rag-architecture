@@ -6,7 +6,7 @@ import { GenerativeService } from '../generative/generative.service';
 export class EmbeddingsService {
   constructor(private readonly generativeService: GenerativeService) {}
 
-  // * Normalizer depending of OS document generation
+  // * Normalizes content based on the operating system's document generation format
   normalizeText(text: string): string {
     return text
       .replace(/\r\n/g, '\n')
@@ -16,13 +16,13 @@ export class EmbeddingsService {
       .trim();
   }
 
-  // * Normalize embeddings for query and ES store
+  // * Normalizes embeddings for queries and Elasticsearch storage
   normalizeEmbedding(embedding: number[]): number[] {
     const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
     return embedding.map((val) => val / norm);
   }
 
-  // * Text splitter for chunks with token limit consideration
+  // * Text splitter into chunks with token limit consideration
   splitTextIntoChunks(text: string, maxChars: number = 500): string[] {
     const textSplitted = this.normalizeText(text).split('\n');
     const chunks: string[] = [];
@@ -66,7 +66,8 @@ export class EmbeddingsService {
     return chunks;
   }
 
-  // * Generates embeddings for a specific page (for a document should be used in a map, for, etc.)
+  // * Generates embeddings for a specific page of text
+  // * When processing a full document, this method should be used inside a map, for-loop, etc
   async embedPage(text: string): Promise<EmbeddingData> {
     const chunks = this.splitTextIntoChunks(text);
     const embeddingsResponse = await this.generativeService.embedChunks(chunks);

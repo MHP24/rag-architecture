@@ -10,6 +10,13 @@ import { EmbeddingsModule } from '../embeddings/embeddings.module';
   imports: [
     ElasticsearchModule.register({
       node: envs.es.url,
+      auth: {
+        username: envs.es.username,
+        password: envs.es.password,
+      },
+      tls: {
+        rejectUnauthorized: envs.es.tls,
+      },
     }),
     GenerativeModule,
     EmbeddingsModule,

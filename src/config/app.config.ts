@@ -5,6 +5,9 @@ config();
 interface EnvVars {
   PORT: number;
   ELASTICSEARCH_URL: string;
+  ELASTICSEARCH_USERNAME: string;
+  ELASTICSEARCH_PASSWORD: string;
+  ELASTICSEARCH_TLS: boolean;
   WX_VERSION: string;
   WX_SERVICE_URL: string;
   WX_API_KEY: string;
@@ -17,6 +20,9 @@ const envSchema = joi
   .object({
     PORT: joi.number().required(),
     ELASTICSEARCH_URL: joi.string().required(),
+    ELASTICSEARCH_USERNAME: joi.string().required(),
+    ELASTICSEARCH_PASSWORD: joi.string().required(),
+    ELASTICSEARCH_TLS: joi.boolean().required(),
     WX_VERSION: joi.string().required(),
     WX_SERVICE_URL: joi.string().required(),
     WX_API_KEY: joi.string().required(),
@@ -37,6 +43,9 @@ export const envs = {
   port: envVars.PORT,
   es: {
     url: envVars.ELASTICSEARCH_URL,
+    username: envVars.ELASTICSEARCH_USERNAME,
+    password: envVars.ELASTICSEARCH_PASSWORD,
+    tls: envVars.ELASTICSEARCH_TLS,
   },
   llm: {
     version: envVars.WX_VERSION,
