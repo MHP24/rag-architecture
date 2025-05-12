@@ -19,8 +19,10 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Document Service')
-    .setDescription('Webservice to create and download files')
+    .setTitle('RAG Webservice')
+    .setDescription(
+      'Webservice for searching documents and uploading files to an Elasticsearch database',
+    )
     .setVersion('1.0')
     .build();
 
